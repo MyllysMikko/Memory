@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
+    [SerializeField] GameObject tilePrefab;
     [SerializeField] Tile[] tiles;
     TileFactory tileFactory;
     void Start()
@@ -14,10 +15,7 @@ public class GameController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse0))
-        {
-            MouseClick();
-        }
+
 
         if (Input.GetKeyDown(KeyCode.G))
         {
@@ -35,19 +33,23 @@ public class GameController : MonoBehaviour
         }
     }
 
-    void MouseClick()
+    void OnTileClicked(int tileIndex)
     {
-        RaycastHit hit;
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        
-        if (Physics.Raycast(ray, out hit))
-        {
-            Debug.Log("hit");
-        }
+        Debug.Log(tileIndex);
     }
 
+    /// <summary>
+    /// This function calls tileFactory to make an array of tiles.
+    /// Each tile will be identified by it's index within this array.
+    /// </summary>
     void GetTiles()
     {
         tiles = tileFactory.GetTiles(2);
+        GameObject spawnedTile = Instantiate(tilePrefab, transform.position, Quaternion.identity);
+        TileView tileView = spawnedTile.GetComponent<TileView>();
+
+        tileView.SetTile(tiles[0], 0);
+        tileView.tileClicked += OnTileClicked;
+
     }
 }

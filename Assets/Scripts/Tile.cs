@@ -7,7 +7,7 @@ using UnityEngine;
 public class Tile
 {
     TileColor color;
-    bool flipped;
+    public bool flipped {  get; private set; }
 
     public Tile(TileColor color)
     {
