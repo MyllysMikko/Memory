@@ -7,9 +7,16 @@ public class GameController : MonoBehaviour
     [SerializeField] GameObject tilePrefab;
     [SerializeField] TileView[] tiles;
     [SerializeField] TileFactory tileFactory;
+
+    [Header("Tiles")]
+    [SerializeField] int numberOfPairs;
+    [SerializeField] int[] flipped;
+    [SerializeField] int numberFlipped;
     void Start()
     {
         //tileFactory = gameObject.AddComponent<TileFactory>();
+        numberFlipped = 0;
+        flipped = new int[2];
     }
 
     // Update is called once per frame
@@ -25,8 +32,34 @@ public class GameController : MonoBehaviour
 
     void OnTileClicked(int tileIndex)
     {
-        TileView tileView = tiles[tileIndex].GetComponent<TileView>();
-        Debug.Log($"{tileView.tile.color}, {tileView.tile.flipped}");
+        Debug.Log($"{tiles[tileIndex].tile.color}, {tiles[tileIndex].tile.flipped}");
+
+        tiles[tileIndex].tile.flipped = true;
+        flipped[numberFlipped] = tileIndex;
+        numberFlipped++;
+
+        if (numberFlipped > 1)
+        {
+            CheckSelected();
+            numberFlipped = 0;
+        }
+    }
+
+    void CheckSelected()
+    {
+        TileView tile1 = tiles[flipped[0]];
+        TileView tile2 = tiles[flipped[1]];
+
+        if (tile1.tile.color == tile2.tile.color)
+        {
+            Debug.Log("Match!");
+        }
+        else
+        {
+            Debug.Log("Didn't match!");
+            tile1.tile.flipped = false;
+            tile2.tile.flipped = false;
+        }
     }
 
     /// <summary>
