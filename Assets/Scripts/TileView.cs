@@ -24,6 +24,13 @@ public class TileView : MonoBehaviour
         
     }
 
+    /// <summary>
+    /// Event is called when this tile is clicked.
+    /// tileIndex is passed along this event, which GameController uses to identify this tile in the array and check it's information. (mainly to check it's color)
+    /// !tile.flipped ensures that events are not called for tiles that are already flipped.
+    /// (This check could be done in GameController since it can already access this tile using tileIndex, but I find it better to not send an event at tall if a tile can't be flipped)
+    /// 
+    /// </summary>
     public void OnClick()
     {
         if (!tile.flipped)
@@ -34,10 +41,14 @@ public class TileView : MonoBehaviour
     }
 
 
-    public void SetTile(Tile tile, int tileIndex)
+    public void SetTile(Tile tile)
     {
         this.tile = tile;
-        this.tileIndex = tileIndex;
         //TODO set model state to mirror tile state (bool flipped)
+    }
+
+    public void SetIndex(int index)
+    {
+        tileIndex = index;
     }
 }

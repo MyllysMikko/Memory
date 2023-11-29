@@ -30,6 +30,8 @@ public class GameController : MonoBehaviour
         }
     }
 
+
+
     void OnTileClicked(int tileIndex)
     {
         Debug.Log($"{tiles[tileIndex].tile.color}, {tiles[tileIndex].tile.flipped}");
@@ -68,7 +70,7 @@ public class GameController : MonoBehaviour
     /// </summary>
     void GetTiles()
     {
-        tiles = tileFactory.GetTiles(2);
+        tiles = tileFactory.GetTiles(4);
 
         foreach (var tile in tiles)
         {
