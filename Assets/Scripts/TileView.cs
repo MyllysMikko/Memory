@@ -6,7 +6,7 @@ using UnityEngine;
 public class TileView : MonoBehaviour
 {
     int tileIndex = 0;
-    [SerializeField] Tile tile;
+    public Tile tile;
 
     public delegate void GameEvent(int tileIndex);
 
@@ -32,6 +32,7 @@ public class TileView : MonoBehaviour
         }
 
     }
+
 
     public void SetTile(Tile tile, int tileIndex)
     {

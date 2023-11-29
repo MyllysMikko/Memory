@@ -6,7 +6,7 @@ using UnityEngine;
 [Serializable]
 public class Tile
 {
-    TileColor color;
+    public TileColor color { get; private set; }
     public bool flipped {  get; private set; }
 
     public Tile(TileColor color)

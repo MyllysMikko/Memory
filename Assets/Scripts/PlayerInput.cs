@@ -32,7 +32,6 @@ public class PlayerInput : MonoBehaviour
 
                 tileView?.OnClick();
 
-                Debug.Log("Tile clicked");
             }
         }
     }
