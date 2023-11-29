@@ -1,14 +1,16 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
-    [SerializeField] GameObject tilePrefab;
     [SerializeField] TileView[] tiles;
     [SerializeField] TileFactory tileFactory;
 
     [Header("Tiles")]
+    //[SerializeField] Transform startPos;
+    [SerializeField] float spacing = 0.1f;
     [SerializeField] int numberOfPairs;
     [SerializeField] int[] flipped;
     [SerializeField] int numberFlipped;
@@ -64,18 +66,45 @@ public class GameController : MonoBehaviour
         }
     }
 
+
     /// <summary>
     /// This function calls tileFactory to make an array of tiles.
     /// Each tile will be identified by it's index within this array.
     /// </summary>
     void GetTiles()
     {
-        tiles = tileFactory.GetTiles(4);
+        tiles = tileFactory.GetTiles(numberOfPairs);
 
         foreach (var tile in tiles)
         {
             tile.tileClicked += OnTileClicked;
         }
 
+        PositionTiles();
+
+    }
+
+    void PositionTiles()
+    {
+        int tilesPerRow = numberOfPairs / 2;
+
+        Vector3 startPos = Camera.main.transform.position;
+        startPos.y -= 5;
+
+        //startPos.z += tilesPerRow * 0.5f * spacing;
+        //startPos.x -= tilesPerRow * 0.5f * spacing;
+
+
+        for (int i = 0; i < tiles.Length; i++)
+        {
+            float rowf = Mathf.Floor(i / tilesPerRow);
+
+            int row = Convert.ToInt32(rowf);
+            int column = i % tilesPerRow;
+
+            Vector3 position = new Vector3(column * spacing, 0f, row * spacing);
+
+            tiles[i].transform.position = startPos + position;
+        }
     }
 }
