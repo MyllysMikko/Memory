@@ -10,8 +10,11 @@ public class GameController : MonoBehaviour
 
     [Header("Tiles")]
     //[SerializeField] Transform startPos;
+    [SerializeField] float distanceFromCamera = 10f;
+    [SerializeField] int gridX;
+    [SerializeField] int gridY;
     [SerializeField] float spacing = 0.1f;
-    [SerializeField] int numberOfPairs;
+    //[SerializeField] int numberOfPairs;
     [SerializeField] int[] flipped;
     [SerializeField] int numberFlipped;
     void Start()
@@ -73,34 +76,51 @@ public class GameController : MonoBehaviour
     /// </summary>
     void GetTiles()
     {
-        tiles = tileFactory.GetTiles(numberOfPairs);
 
-        foreach (var tile in tiles)
+        int numberOfTiles = gridX * gridY;
+
+        if (numberOfTiles % 2 == 0)
         {
-            tile.tileClicked += OnTileClicked;
+           tiles = tileFactory.GetTiles((int)(numberOfTiles * 0.5f));
+
+            foreach (var tile in tiles)
+            {
+                tile.tileClicked += OnTileClicked;
+            }
+
+            PositionTiles();
+        }
+        else
+        {
+            Debug.LogError("Grid size results in uneven number of tiles");
         }
 
-        PositionTiles();
+
 
     }
 
     void PositionTiles()
     {
-        int tilesPerRow = numberOfPairs / 2;
 
         Vector3 startPos = Camera.main.transform.position;
-        startPos.y -= 5;
 
-        //startPos.z += tilesPerRow * 0.5f * spacing;
-        //startPos.x -= tilesPerRow * 0.5f * spacing;
+
+        startPos.y -= spacing * gridX;
+
+        startPos.x -= spacing * gridX * 0.5f;
+        startPos.x += spacing * 0.5f;
+
+        startPos.z -= spacing * gridY * 0.5f;
+        startPos.z += spacing * 0.5f;
+
 
 
         for (int i = 0; i < tiles.Length; i++)
         {
-            float rowf = Mathf.Floor(i / tilesPerRow);
+            float rowf = Mathf.Floor(i / gridX);
 
             int row = Convert.ToInt32(rowf);
-            int column = i % tilesPerRow;
+            int column = i % gridX;
 
             Vector3 position = new Vector3(column * spacing, 0f, row * spacing);
 
