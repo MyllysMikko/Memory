@@ -6,6 +6,7 @@ using UnityEngine;
 public class TileView : MonoBehaviour
 {
     [SerializeField] Renderer backSideRenderer;
+    [SerializeField] Animator animator;
 
     int tileIndex = 0;
     public Tile tile;
@@ -17,7 +18,6 @@ public class TileView : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
     }
 
     // Update is called once per frame
@@ -38,8 +38,16 @@ public class TileView : MonoBehaviour
         if (!tile.flipped)
         {
             tileClicked?.Invoke(tileIndex);
+            //animator.SetBool("flipped", true);
+            //Flip();
         }
 
+    }
+
+    public void Flip()
+    {
+        tile.flipped = !tile.flipped;
+        animator.SetBool("flipped", tile.flipped);
     }
 
 

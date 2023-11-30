@@ -39,20 +39,25 @@ public class GameController : MonoBehaviour
 
     void OnTileClicked(int tileIndex)
     {
-        Debug.Log($"{tiles[tileIndex].tile.color}, {tiles[tileIndex].tile.flipped}");
-
-        tiles[tileIndex].tile.flipped = true;
-        flipped[numberFlipped] = tileIndex;
-        numberFlipped++;
-
-        if (numberFlipped > 1)
+        // No additional flips are accepted until the last two are flipped back (If they didn't match)
+        if (numberFlipped <= 1)
         {
-            CheckSelected();
-            numberFlipped = 0;
+            Debug.Log($"{tiles[tileIndex].tile.color}, {tiles[tileIndex].tile.flipped}");
+
+            //tiles[tileIndex].tile.flipped = true;
+            tiles[tileIndex].Flip();
+            flipped[numberFlipped] = tileIndex;
+            numberFlipped++;
+
+            if (numberFlipped > 1)
+            {
+                StartCoroutine(CheckSelected());
+            }
         }
+
     }
 
-    void CheckSelected()
+    IEnumerator CheckSelected()
     {
         TileView tile1 = tiles[flipped[0]];
         TileView tile2 = tiles[flipped[1]];
@@ -60,14 +65,18 @@ public class GameController : MonoBehaviour
         if (tile1.tile.color == tile2.tile.color)
         {
             Debug.Log("Match!");
+            numberFlipped = 0;
         }
         else
         {
             Debug.Log("Didn't match!");
-            tile1.tile.flipped = false;
-            tile2.tile.flipped = false;
+            yield return new WaitForSeconds(0.5f);
+            tile1.Flip();
+            tile2.Flip();
+            numberFlipped = 0;
         }
     }
+
 
 
     /// <summary>

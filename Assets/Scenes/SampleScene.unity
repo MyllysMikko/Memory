@@ -1989,8 +1989,8 @@ MonoBehaviour:
   tiles: []
   tileFactory: {fileID: 1787584220}
   distanceFromCamera: 5
-  gridX: 4
-  gridY: 4
+  gridX: 2
+  gridY: 2
   spacing: 2
   flipped: 
   numberFlipped: 0
