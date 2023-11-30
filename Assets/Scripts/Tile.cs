@@ -6,10 +6,10 @@ using UnityEngine;
 [Serializable]
 public class Tile
 {
-    public TileColor color { get; private set; }
+    public Color color { get; private set; }
     public bool flipped;
 
-    public Tile(TileColor color)
+    public Tile(Color color)
     {
         this.color = color;
         flipped = false;
@@ -19,19 +19,5 @@ public class Tile
     {
         Debug.Log(color.ToString());
         Debug.Log($"Flipped: {flipped}");
-    }
-
-
-
-    public enum TileColor
-    {
-        Red,
-        Green,
-        Blue,
-        Purple,
-        Pink,
-        Cyan,
-        Orange,
-        Black
     }
 }

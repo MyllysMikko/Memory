@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class TileView : MonoBehaviour
 {
-    //[SerializeField] Renderer backSideRenderer;
+    [SerializeField] Renderer backSideRenderer;
 
     int tileIndex = 0;
     public Tile tile;
@@ -47,7 +47,7 @@ public class TileView : MonoBehaviour
     {
         this.tile = tile;
         //TODO set model state to mirror tile state (bool flipped)
-        //backSideRenderer.material.SetColor("_Color", Color.red);
+        backSideRenderer.material.SetColor("_Color", this.tile.color);
     }
 
     public void SetIndex(int index)

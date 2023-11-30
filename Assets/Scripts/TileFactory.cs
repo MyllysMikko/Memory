@@ -6,6 +6,18 @@ public class TileFactory : MonoBehaviour
 {
     [SerializeField] GameObject tilePrefab;
 
+    Color[] colorArray =
+    {
+        Color.red,
+        Color.green,
+        Color.blue,
+        new Color(0.5f, 0, 0.5f), //Purple
+        new Color(1, 0.4f, 0.7f), //Pink (hotpink to be precise)
+        Color.cyan,
+        new Color(1, 0.65f, 0), //Orange
+        Color.black
+    };
+
     /// <summary>
     /// This function creates multiple tilePrefabs and returns an array of their TileView classes
     /// tilePrefabs contain TileView class which handles a tile's animations (While also holding the Tile class for easy access)
@@ -28,8 +40,8 @@ public class TileFactory : MonoBehaviour
             //0 = Black
             //1 = Red
             //This could be a problem if you were to ask for more pairs than there were available colors.
-            tiles[tileIndex] = new Tile((Tile.TileColor)i);
-            tiles[tileIndex+1] = new Tile((Tile.TileColor)i);
+            tiles[tileIndex] = new Tile(colorArray[i]);
+            tiles[tileIndex+1] = new Tile(colorArray[i]);
             tileIndex += 2;
         }
 
