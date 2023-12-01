@@ -14,10 +14,4 @@ public class Tile
         this.color = color;
         flipped = false;
     }
-
-    public void Print()
-    {
-        Debug.Log(color.ToString());
-        Debug.Log($"Flipped: {flipped}");
-    }
 }

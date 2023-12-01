@@ -14,7 +14,10 @@ public class GameController : MonoBehaviour
     [SerializeField] int gridX;
     [SerializeField] int gridY;
     [SerializeField] float spacing = 0.1f;
-    //[SerializeField] int numberOfPairs;
+
+    int pairsMatched;
+    int numberOfTiles;
+
     [SerializeField] int[] flipped;
     [SerializeField] int numberFlipped;
     void Start()
@@ -42,9 +45,6 @@ public class GameController : MonoBehaviour
         // No additional flips are accepted until the last two are flipped back (If they didn't match)
         if (numberFlipped <= 1)
         {
-            Debug.Log($"{tiles[tileIndex].tile.color}, {tiles[tileIndex].tile.flipped}");
-
-            //tiles[tileIndex].tile.flipped = true;
             tiles[tileIndex].Flip();
             flipped[numberFlipped] = tileIndex;
             numberFlipped++;
@@ -65,7 +65,17 @@ public class GameController : MonoBehaviour
         if (tile1.tile.color == tile2.tile.color)
         {
             Debug.Log("Match!");
+            pairsMatched++;
             numberFlipped = 0;
+
+            if (pairsMatched == numberOfTiles * 0.5f)
+            {
+                Debug.Log("Win!");
+                //TODO
+                //Go back to menu.
+                //Set level as complete
+            }
+            
         }
         else
         {
@@ -85,8 +95,9 @@ public class GameController : MonoBehaviour
     /// </summary>
     void GetTiles()
     {
+        pairsMatched = 0;
 
-        int numberOfTiles = gridX * gridY;
+        numberOfTiles = gridX * gridY;
 
         if (numberOfTiles % 2 == 0)
         {
@@ -114,7 +125,7 @@ public class GameController : MonoBehaviour
         Vector3 startPos = Camera.main.transform.position;
 
 
-        startPos.y -= spacing * gridX;
+        startPos.y -= spacing * Math.Max(gridX, gridY);
 
         startPos.x -= spacing * gridX * 0.5f;
         startPos.x += spacing * 0.5f;

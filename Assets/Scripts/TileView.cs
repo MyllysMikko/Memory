@@ -38,8 +38,6 @@ public class TileView : MonoBehaviour
         if (!tile.flipped)
         {
             tileClicked?.Invoke(tileIndex);
-            //animator.SetBool("flipped", true);
-            //Flip();
         }
 
     }
