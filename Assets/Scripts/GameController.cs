@@ -13,13 +13,16 @@ public class GameController : MonoBehaviour
     [SerializeField] float distanceFromCamera = 10f;
     [SerializeField] int gridX;
     [SerializeField] int gridY;
-    [SerializeField] float spacing = 0.1f;
+    [SerializeField] float spacing = 2;
 
+    int currentLevel;
     int pairsMatched;
     int numberOfTiles;
 
     [SerializeField] int[] flipped;
     [SerializeField] int numberFlipped;
+
+    public TileView.GameEvent levelCompleted;
     void Start()
     {
         //tileFactory = gameObject.AddComponent<TileFactory>();
@@ -57,6 +60,14 @@ public class GameController : MonoBehaviour
 
     }
 
+    public void StartLevel(int currentLevel, int gridX, int gridY)
+    {
+        this.currentLevel = currentLevel;
+        this.gridX = gridX;
+        this.gridY = gridY;
+        GetTiles();
+    }
+
     IEnumerator CheckSelected()
     {
         TileView tile1 = tiles[flipped[0]];
@@ -71,6 +82,7 @@ public class GameController : MonoBehaviour
             if (pairsMatched == numberOfTiles * 0.5f)
             {
                 Debug.Log("Win!");
+                levelCompleted.Invoke(currentLevel);
                 //TODO
                 //Go back to menu.
                 //Set level as complete
@@ -95,6 +107,9 @@ public class GameController : MonoBehaviour
     /// </summary>
     void GetTiles()
     {
+
+        DestroyTiles();
+
         pairsMatched = 0;
 
         numberOfTiles = gridX * gridY;
@@ -118,6 +133,7 @@ public class GameController : MonoBehaviour
 
 
     }
+
 
     void PositionTiles()
     {
@@ -145,6 +161,16 @@ public class GameController : MonoBehaviour
             Vector3 position = new Vector3(column * spacing, 0f, row * spacing);
 
             tiles[i].transform.position = startPos + position;
+        }
+    }
+
+    //To increase performance, we could (and probably should!) pool tiles and then reuse them
+    //instead of deleting them and creating new ones each time.
+    void DestroyTiles()
+    {
+        foreach (var tile in tiles)
+        {
+            Destroy(tile.gameObject);
         }
     }
 }
