@@ -61,7 +61,6 @@ public class TileFactory : MonoBehaviour
 
         for (int i = 0; i < tiles.Length; i++)
         {
-            //TODO CALCULATE POSITION
             Vector3 pos = Vector3.zero;
 
             GameObject spawnedTile = Instantiate(tilePrefab, pos, Quaternion.identity);
