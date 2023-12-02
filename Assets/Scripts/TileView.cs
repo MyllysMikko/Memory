@@ -38,6 +38,7 @@ public class TileView : MonoBehaviour
         if (!tile.flipped)
         {
             tileClicked?.Invoke(tileIndex);
+            Debug.Log(tile.color.ToString());
         }
 
     }

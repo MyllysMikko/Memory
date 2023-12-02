@@ -9,13 +9,25 @@ public class TileFactory : MonoBehaviour
     Color[] colorArray =
     {
         Color.red,
-        Color.green,
         Color.blue,
-        new Color(0.5f, 0, 0.5f), //Purple
-        new Color(1, 0.4f, 0.7f), //Pink (hotpink to be precise)
+        Color.green,
+        Color.yellow,
+        new Color(1, 0.5f, 0), //orange
         Color.cyan,
-        new Color(1, 0.65f, 0), //Orange
-        Color.black
+        new Color(0.5f, 0, 1), //violet
+        Color.magenta,
+        new Color(0.01f, 0.19f, 0.13f), //Dark green
+        new Color(0.55f, 0, 0), //Dark red
+        new Color(1, 0, 0.5f), //dark pink
+        Color.gray,
+        Color.black,
+        Color.white,
+        new Color(0, 0.98f, 0.6f), //Medium Spring Green
+        Color.gray,
+        new Color(0.94f, 0.9f, 0.55f), //Khaki
+        new Color(1, 0.63f, 0.48f) //Salmon
+
+
     };
 
     /// <summary>

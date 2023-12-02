@@ -9,13 +9,14 @@ public class SaveManager
 
     string saveFileName = "save.txt";
 
-
+    //Since save data currently consists of only a single integer (How many levels have been completed). We could probably just use playePrefs to store this data.
+    //But I'd rather use playerPrefs to save options (Player preferences) and have save data be separate from that.
     public int LoadData()
     {
 
         int levelsCompleted = 0;
 
-        string filePath = Path.Combine(Application.persistentDataPath, saveFileName);
+        string filePath = Path.Combine(Application.dataPath, saveFileName);
 
         if (File.Exists(filePath))
         {
@@ -33,7 +34,7 @@ public class SaveManager
 
     public void SaveData(int levelsCompleted)
     {
-        string filePath = Path.Combine(Application.persistentDataPath, saveFileName);
+        string filePath = Path.Combine(Application.dataPath, saveFileName);
         
         File.WriteAllText(filePath, levelsCompleted.ToString());
     }

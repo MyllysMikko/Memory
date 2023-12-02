@@ -62,6 +62,8 @@ public class GameController : MonoBehaviour
 
     public void StartLevel(int currentLevel, int gridX, int gridY)
     {
+        numberFlipped = 0;
+        pairsMatched = 0;
         this.currentLevel = currentLevel;
         this.gridX = gridX;
         this.gridY = gridY;
@@ -108,9 +110,7 @@ public class GameController : MonoBehaviour
     void GetTiles()
     {
 
-        DestroyTiles();
 
-        pairsMatched = 0;
 
         numberOfTiles = gridX * gridY;
 
@@ -166,7 +166,7 @@ public class GameController : MonoBehaviour
 
     //To increase performance, we could (and probably should!) pool tiles and then reuse them
     //instead of deleting them and creating new ones each time.
-    void DestroyTiles()
+    public void DestroyTiles()
     {
         foreach (var tile in tiles)
         {
