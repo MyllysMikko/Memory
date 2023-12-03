@@ -13,37 +13,34 @@ public class SettingsManager : MonoBehaviour
 
     bool fullscreen;
 
-    Resolution[] resolutions;
-    List<Resolution> filteredResolutions = new List<Resolution>();
+    Vector2[] resolutions =
+    {
+        new Vector2(1920, 1090),
+        new Vector2(1600, 900),
+        new Vector2(1280, 720)
+    };
+
     int resolutionIndex;
 
+    //
     // Start is called before the first frame update
     void Start()
     {
-        fullscreenToggle.isOn = PlayerPrefs.GetInt("fullscreen", 1) == 1;
-        resolutionIndex = PlayerPrefs.GetInt("resolutionIndex", 0);
-        dropDown.value = resolutionIndex;
+        Debug.Log($"Resolution index at start {resolutionIndex}");
+        LoadPrefs();
+        Debug.Log($"Resolution index after load {resolutionIndex}");
+        fullscreenToggle.isOn = fullscreen;
 
-        resolutions = Screen.resolutions;
         dropDown.ClearOptions();
 
-        foreach (Resolution resolution in resolutions)
-        {
-            float aspectRatio = (float)resolution.width / resolution.height;
-            if (Mathf.Approximately(aspectRatio, 16f/9f))
-            {
-                filteredResolutions.Add(resolution);
-                Debug.Log("burh");
-            }
-        }
-
         List<string> options = new List<string>();
-        foreach (Resolution resolution in filteredResolutions)
+        foreach (Vector2 resolution in resolutions)
         {
-            options.Add($"{resolution.width} x {resolution.height}");
+            options.Add($"{resolution.x} x {resolution.y}");
         }
 
         dropDown.AddOptions(options);
+        dropDown.value = resolutionIndex;
         dropDown.RefreshShownValue();
         SetResolution();
     }
@@ -59,10 +56,11 @@ public class SettingsManager : MonoBehaviour
 
     public void SetResolution()
     {
-        resolutionIndex = Mathf.Clamp(resolutionIndex, 0, Screen.resolutions.Length);
+        Debug.Log("Change resolution");
+        //resolutionIndex = Mathf.Clamp(resolutionIndex, 0, Screen.resolutions.Length);
 
-        Resolution resolution = resolutions[resolutionIndex];
-        Screen.SetResolution(resolution.width, resolution.height, fullscreen);
+        Vector2 resolution = resolutions[resolutionIndex];
+        Screen.SetResolution((int)resolution.x, (int)resolution.y, fullscreen);
         SavePrefs();
 
     }
@@ -73,14 +71,29 @@ public class SettingsManager : MonoBehaviour
         SetResolution();
     }
 
-    public void OnFullscreenChange()
+    public void OnFullscreenChange(bool change)
     {
+        if (change != fullscreen)
+        {
+            fullscreen = change;
+            SetResolution();
+        }
+    }
 
+    void LoadPrefs()
+    {
+        resolutionIndex = PlayerPrefs.GetInt("resolutionIndex", 0);
+        fullscreen = PlayerPrefs.GetInt("fullscreen", 1) == 1;
     }
 
     void SavePrefs()
     {
-        PlayerPrefs.SetInt("fullscreen", Convert.ToInt32(fullscreenToggle.isOn));
+        Debug.Log($"ResolutionIndex before save{resolutionIndex}");
+        PlayerPrefs.SetInt("fullscreen", Convert.ToInt32(fullscreen));
         PlayerPrefs.SetInt("resolutionIndex", resolutionIndex);
+
+        PlayerPrefs.Save();
+
+        Debug.Log($"ResoltuionIndex after save {PlayerPrefs.GetInt("resolutionIndex", -100)}");
     }
 }
