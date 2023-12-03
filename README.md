@@ -7,8 +7,8 @@ Short memory game where you flip tiles trying to match their colors.
 ## What's in the game
 
 - 3 Levels with each having more tiles than the last
-- Progress is saved
 - 3 resolution settings
+- Progress and settings are saved
 - Secret for those who complete all 3 levels (Hint, look at the title)
 
 ![clicktitle](https://github.com/MyllysMikko/Memory/assets/115700336/2bf7ef99-d002-4047-8f6b-c229323596f2)
