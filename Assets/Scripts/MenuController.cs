@@ -6,9 +6,15 @@ using UnityEngine.UI;
 
 public class MenuController : MonoBehaviour
 {
+    [SerializeField] TextMeshProUGUI winText;
+    [SerializeField] TextMeshProUGUI titleText;
+
     [SerializeField] GameObject mainMenu;
     [SerializeField] GameObject levelSelect;
     [SerializeField] GameObject options;
+
+    //This can be toggled on as a reward for completing all levels.
+    [SerializeField] GameObject backGround;
 
     [SerializeField] GameController gameController;
 
@@ -23,6 +29,8 @@ public class MenuController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        backGround.SetActive(false);
+        winText.enabled = false;
         //Set mainmenu as the starting menu
         stateStack.Push(MenuState.MainMenu);
         SwitchMenu();
@@ -42,11 +50,14 @@ public class MenuController : MonoBehaviour
 
     public void OnLevelComplete(int level)
     {
-        levelsCompleted = level;
-        saveManager.SaveData(levelsCompleted);
-        UpdateLevelSelect();
-        Debug.Log(levelsCompleted);
-        Debug.Log(saveManager.LoadData());
+        winText.enabled = true;
+
+        if (level > levelsCompleted)
+        {
+            levelsCompleted = level;
+            saveManager.SaveData(levelsCompleted);
+            UpdateLevelSelect();
+        }
     }
 
     //Updates which levels can be selected.
@@ -57,6 +68,11 @@ public class MenuController : MonoBehaviour
         for (int i = 0; i < buttons.Length; i++)
         {
             buttons[i].interactable = i <= levelsCompleted; 
+        }
+
+        if (levelsCompleted >= buttons.Length)
+        {
+            titleText.color = new Color(1, 0.84f, 0); //Gold color
         }
     }
 
@@ -105,11 +121,20 @@ public class MenuController : MonoBehaviour
     {
         if (stateStack.Peek() == MenuState.Level)
         {
+            winText.enabled = false;
             gameController.DestroyTiles();
         }
 
         stateStack.Pop();
         SwitchMenu();
+    }
+
+    public void OnTitlePressed()
+    {
+        if (levelsCompleted >= buttons.Length)
+        {
+            backGround.SetActive(!backGround.activeInHierarchy);
+        }
     }
 
     /// <summary>

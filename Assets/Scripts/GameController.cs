@@ -154,6 +154,7 @@ public class GameController : MonoBehaviour
         }
     }
 
+
     //To increase performance, we could (and probably should!) pool tiles and then reuse them
     //instead of deleting them and creating new ones each time.
     public void DestroyTiles()
