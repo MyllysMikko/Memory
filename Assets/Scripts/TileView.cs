@@ -15,17 +15,6 @@ public class TileView : MonoBehaviour
 
     public event GameEvent tileClicked;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     /// <summary>
     /// Event is called when this tile is clicked.
     /// tileIndex is passed along this event, which GameController uses to identify this tile in the array and check it's information. (mainly to check it's color)

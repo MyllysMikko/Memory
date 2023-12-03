@@ -9,8 +9,6 @@ public class GameController : MonoBehaviour
     [SerializeField] TileFactory tileFactory;
 
     [Header("Tiles")]
-    //[SerializeField] Transform startPos;
-    [SerializeField] float distanceFromCamera = 10f;
     [SerializeField] int gridX;
     [SerializeField] int gridY;
     [SerializeField] float spacing = 2;
@@ -19,28 +17,15 @@ public class GameController : MonoBehaviour
     int pairsMatched;
     int numberOfTiles;
 
-    [SerializeField] int[] flipped;
-    [SerializeField] int numberFlipped;
+    int[] flipped;
+    int numberFlipped;
 
     public TileView.GameEvent levelCompleted;
     void Start()
     {
-        //tileFactory = gameObject.AddComponent<TileFactory>();
         numberFlipped = 0;
         flipped = new int[2];
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-
-        if (Input.GetKeyDown(KeyCode.G))
-        {
-            GetTiles();
-        }
-    }
-
 
 
     void OnTileClicked(int tileIndex)
@@ -60,6 +45,12 @@ public class GameController : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// Prepares current level by resetting any counters used to keep track of tiles and spawning new ones
+    /// </summary>
+    /// <param name="currentLevel">Level number, this is returned when a level is completed.</param>
+    /// <param name="gridX">How wide a grid of tiles is</param>
+    /// <param name="gridY">How high a grid of tiles is</param>
     public void StartLevel(int currentLevel, int gridX, int gridY)
     {
         numberFlipped = 0;
@@ -70,6 +61,12 @@ public class GameController : MonoBehaviour
         GetTiles();
     }
 
+    /// <summary>
+    /// Check whether flipped tiles match.
+    /// If they don't match, we wait a bit before flipping them back.
+    /// I'm using a courotine since it's easy to make something wait before continuing.
+    /// </summary>
+    /// <returns></returns>
     IEnumerator CheckSelected()
     {
         TileView tile1 = tiles[flipped[0]];
@@ -81,15 +78,12 @@ public class GameController : MonoBehaviour
             pairsMatched++;
             numberFlipped = 0;
 
+            //If all tiles have been flipped, we send an event indicating that this level has been completed.
             if (pairsMatched == numberOfTiles * 0.5f)
             {
                 Debug.Log("Win!");
                 levelCompleted.Invoke(currentLevel);
-                //TODO
-                //Go back to menu.
-                //Set level as complete
             }
-            
         }
         else
         {
@@ -109,9 +103,6 @@ public class GameController : MonoBehaviour
     /// </summary>
     void GetTiles()
     {
-
-
-
         numberOfTiles = gridX * gridY;
 
         if (numberOfTiles % 2 == 0)
@@ -129,12 +120,11 @@ public class GameController : MonoBehaviour
         {
             Debug.LogError("Grid size results in uneven number of tiles");
         }
-
-
-
     }
 
-
+    /// <summary>
+    /// Tiles are positioned in a grid in a way that they all fit withing the camera's view
+    /// </summary>
     void PositionTiles()
     {
 
@@ -170,6 +160,7 @@ public class GameController : MonoBehaviour
     {
         foreach (var tile in tiles)
         {
+            tile.tileClicked -= OnTileClicked;
             Destroy(tile.gameObject);
         }
     }

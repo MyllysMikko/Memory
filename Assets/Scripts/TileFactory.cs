@@ -73,7 +73,7 @@ public class TileFactory : MonoBehaviour
             tileViews[i] = tileView;
         }
 
-        //We randomize the order of tiles and finally go through the array one last time to set their index.
+        //We randomize the order of tiles and finally go through the array one last time to set their propex indexes.
         Shuffle(tileViews);
 
         for (int i = 0; i < tileViews.Length; i++)

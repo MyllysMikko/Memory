@@ -7,12 +7,14 @@ using UnityEngine.UI;
 
 public class SettingsManager : MonoBehaviour
 {
-
     [SerializeField] TMP_Dropdown dropDown;
     [SerializeField] Toggle fullscreenToggle;
 
+    int resolutionIndex;
     bool fullscreen;
 
+    //Instead of automatically detecting what resolutions the user's monitor supports, I've decided to just define 3 resolutions that you can choose from.
+    //Of course in a proper game this is most likely a horrible way to handle resolution settings.
     Vector2[] resolutions =
     {
         new Vector2(1920, 1090),
@@ -20,63 +22,59 @@ public class SettingsManager : MonoBehaviour
         new Vector2(1280, 720)
     };
 
-    int resolutionIndex;
 
-    //
-    // Start is called before the first frame update
     void Start()
     {
-        Debug.Log($"Resolution index at start {resolutionIndex}");
+        //Load saved settings
         LoadPrefs();
-        Debug.Log($"Resolution index after load {resolutionIndex}");
         fullscreenToggle.isOn = fullscreen;
 
+        //Set dropdown to display available resolutions
         dropDown.ClearOptions();
-
         List<string> options = new List<string>();
         foreach (Vector2 resolution in resolutions)
         {
             options.Add($"{resolution.x} x {resolution.y}");
         }
-
         dropDown.AddOptions(options);
         dropDown.value = resolutionIndex;
         dropDown.RefreshShownValue();
+
         SetResolution();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.O))
-        {
-            fullscreenToggle.isOn = PlayerPrefs.GetInt("fullscreen", 1) == 1;
-        }
-    }
-
+    /// <summary>
+    /// Sets resolution according to resolutionIndex. Also changes if the game is fullscreen.
+    /// </summary>
     public void SetResolution()
     {
-        Debug.Log("Change resolution");
-        //resolutionIndex = Mathf.Clamp(resolutionIndex, 0, Screen.resolutions.Length);
-
         Vector2 resolution = resolutions[resolutionIndex];
         Screen.SetResolution((int)resolution.x, (int)resolution.y, fullscreen);
-        SavePrefs();
 
     }
 
+    /// <summary>
+    /// Is called when user selects an option from the dropdown.
+    /// </summary>
+    /// <param name="index">Index of selected option</param>
     public void OnResolutionChange(int index)
     {
         resolutionIndex = index;
         SetResolution();
+        SavePrefs();
     }
 
+    //I've found that changing the value of "fullscreenToggle.isOn" will trigger "OnValueChanged" event even when it's done through script.
+    //This was an issue, because Loading playerPrefs would trigger SetResolution before we had finished loading prefs causing all kinds of issues.
+    //Now instead of just changing the value of fullscreenToggle.isOn, I have a separate bool "fullscreen".
+    //fullscreenToggle.isOn is now used to show what the player has selected, and react to when player wants to change fullscreen.
     public void OnFullscreenChange(bool change)
     {
         if (change != fullscreen)
         {
             fullscreen = change;
             SetResolution();
+            SavePrefs();
         }
     }
 
@@ -88,12 +86,8 @@ public class SettingsManager : MonoBehaviour
 
     void SavePrefs()
     {
-        Debug.Log($"ResolutionIndex before save{resolutionIndex}");
         PlayerPrefs.SetInt("fullscreen", Convert.ToInt32(fullscreen));
         PlayerPrefs.SetInt("resolutionIndex", resolutionIndex);
-
         PlayerPrefs.Save();
-
-        Debug.Log($"ResoltuionIndex after save {PlayerPrefs.GetInt("resolutionIndex", -100)}");
     }
 }

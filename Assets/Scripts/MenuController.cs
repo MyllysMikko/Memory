@@ -23,9 +23,11 @@ public class MenuController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //Set mainmenu as the starting menu
         stateStack.Push(MenuState.MainMenu);
         SwitchMenu();
 
+        //Get "save data" (How many levels have been completed)
         saveManager = new SaveManager();
         levelsCompleted = saveManager.LoadData();
         Debug.Log(levelsCompleted);
@@ -34,11 +36,6 @@ public class MenuController : MonoBehaviour
         UpdateLevelSelect();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
 
 
 
@@ -52,6 +49,9 @@ public class MenuController : MonoBehaviour
         Debug.Log(saveManager.LoadData());
     }
 
+    //Updates which levels can be selected.
+    //Since "levelsCompleted" starts counting at 1, and arrays start at 0. This convieniently let's us enable one more level than what has been complete.
+    //Example: if levelsCompleted is 1. Levels 0-1 are enabled.
     void UpdateLevelSelect()
     {
         for (int i = 0; i < buttons.Length; i++)
@@ -112,6 +112,9 @@ public class MenuController : MonoBehaviour
         SwitchMenu();
     }
 
+    /// <summary>
+    /// I'm using a stack to keep track of what menu we should be displaying.
+    /// </summary>
     void SwitchMenu()
     {
         MenuState state;
@@ -120,7 +123,7 @@ public class MenuController : MonoBehaviour
         {
             mainMenu.SetActive(state == MenuState.MainMenu);
             levelSelect.SetActive(state == MenuState.LevelSelect);
-            //options.SetActive(state == MenuState.Options);
+            options.SetActive(state == MenuState.Options);
         }
         else
         {
