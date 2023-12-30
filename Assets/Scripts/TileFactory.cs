@@ -39,7 +39,7 @@ public class TileFactory : MonoBehaviour
     /// </summary>
     /// <param name="numberOfPairs">How many pairs of tiles are to be made</param>
     /// <returns></returns>
-    public TileView[] GetTiles(int numberOfPairs)
+    public Tile[] GetTiles(int numberOfPairs)
     {
         int numberOfTiles = numberOfPairs * 2;
         Tile[] tiles = new Tile[numberOfTiles];
@@ -57,34 +57,14 @@ public class TileFactory : MonoBehaviour
             tileIndex += 2;
         }
 
-        TileView[] tileViews = new TileView[numberOfTiles];
-
-        for (int i = 0; i < tiles.Length; i++)
-        {
-            Vector3 pos = Vector3.zero;
-
-            GameObject spawnedTile = Instantiate(tilePrefab, pos, Quaternion.identity);
-
-            TileView tileView = spawnedTile.GetComponent<TileView>();
-
-            tileView.SetTile(tiles[i]);
-
-
-            tileViews[i] = tileView;
-        }
 
         //We randomize the order of tiles and finally go through the array one last time to set their propex indexes.
-        Shuffle(tileViews);
+        Shuffle(tiles);
 
-        for (int i = 0; i < tileViews.Length; i++)
-        {
-            tileViews[i].SetIndex(i);
-        }
-
-        return tileViews;
+        return tiles;
     }
 
-    void Shuffle(TileView[] tileArray)
+    void Shuffle(Tile[] tileArray)
     {
         for (int i = 0; i < tileArray.Length; i++)
         {

@@ -27,7 +27,7 @@ public class TileView : MonoBehaviour
         if (!tile.flipped)
         {
             tileClicked?.Invoke(tileIndex);
-            Debug.Log(tile.color.ToString());
+            Debug.Log(tile.Color.ToString());
         }
 
     }
@@ -43,7 +43,7 @@ public class TileView : MonoBehaviour
     {
         this.tile = tile;
         //TODO set model state to mirror tile state (bool flipped)
-        backSideRenderer.material.SetColor("_Color", this.tile.color);
+        backSideRenderer.material.SetColor("_Color", this.tile.Color);
     }
 
     public void SetIndex(int index)
