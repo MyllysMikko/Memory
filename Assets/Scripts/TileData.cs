@@ -7,16 +7,10 @@ public class TileData : MonoBehaviour
 {
 
     public List<Tile> tiles = new List<Tile>();
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
+    public void Flip(int tileIndex, bool flipped)
     {
-        
+        tiles[tileIndex].flipped = flipped;
     }
 }
 
@@ -28,7 +22,7 @@ public class Tile
 
     public Tile(Color color)
     {
-        this.Color = color;
+        Color = color;
         flipped = false;
     }
 }

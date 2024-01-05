@@ -39,7 +39,7 @@ public class MenuController : MonoBehaviour
         saveManager = new SaveManager();
         levelsCompleted = saveManager.LoadData();
         Debug.Log(levelsCompleted);
-        gameController.levelCompleted += OnLevelComplete;
+        gameController.LevelCompleted += OnLevelComplete;
 
         UpdateLevelSelect();
     }

@@ -8,11 +8,10 @@ public class GameController : MonoBehaviour
 {
     TileData tileData;
     [SerializeField] TileFactory tileFactory;
+    [SerializeField] TileView tileView;
 
-    [Header("Tiles")]
-    [SerializeField] int gridX;
-    [SerializeField] int gridY;
-    [SerializeField] float spacing = 2;
+    int gridX;
+    int gridY;
 
     int currentLevel;
     int pairsMatched;
@@ -21,7 +20,10 @@ public class GameController : MonoBehaviour
     int[] flipped;
     int numberFlipped;
 
-    public TileView.GameEvent levelCompleted;
+    public delegate void GameEvent(int index);
+
+    public event GameEvent LevelCompleted;
+
     void Start()
     {
         tileData = gameObject.AddComponent<TileData>();
@@ -29,23 +31,56 @@ public class GameController : MonoBehaviour
         flipped = new int[2];
     }
 
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            MouseClick();
+        }
+    }
 
-    //void OnTileClicked(int tileIndex)
-    //{
-    //    // No additional flips are accepted until the last two are flipped back (If they didn't match)
-    //    if (numberFlipped <= 1)
-    //    {
-    //        tiles[tileIndex].Flip();
-    //        flipped[numberFlipped] = tileIndex;
-    //        numberFlipped++;
-    //
-    //        if (numberFlipped > 1)
-    //        {
-    //            StartCoroutine(CheckSelected());
-    //        }
-    //    }
-    //
-    //}
+    void MouseClick()
+    {
+        RaycastHit hit;
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        if (Physics.Raycast(ray, out hit))
+        {
+            if (hit.collider.CompareTag("Tile"))
+            {
+                TilePrefab tilePrefab = hit.collider.GetComponent<TilePrefab>();
+
+                if (!tileData.tiles[tilePrefab.TileIndex].flipped)
+                {
+                    OnTileClicked(tilePrefab.TileIndex);
+                }
+
+
+
+                //tileView?.OnClick();
+
+            }
+        }
+    }
+
+
+    void OnTileClicked(int tileIndex)
+    {
+        // No additional flips are accepted until the last two are flipped back (If they didn't match)
+        if (numberFlipped <= 1)
+        {
+            //tiles[tileIndex].Flip();
+            Flip(tileIndex, true);
+            flipped[numberFlipped] = tileIndex;
+            numberFlipped++;
+    
+            if (numberFlipped > 1)
+            {
+                StartCoroutine(CheckSelected());
+            }
+        }
+    
+    }
 
     /// <summary>
     /// Prepares current level by resetting any counters used to keep track of tiles and spawning new ones
@@ -61,6 +96,8 @@ public class GameController : MonoBehaviour
         this.gridX = gridX;
         this.gridY = gridY;
         GetTiles();
+
+        tileView.SetTiles(tileData.tiles, gridX, gridY);
     }
 
     /// <summary>
@@ -71,10 +108,10 @@ public class GameController : MonoBehaviour
     /// <returns></returns>
     IEnumerator CheckSelected()
     {
-        Tile tile1 = tileData.tiles[flipped[0]];
-        Tile tile2 = tileData.tiles[flipped[1]];
+        Color tile1 = tileData.tiles[flipped[0]].Color;
+        Color tile2 = tileData.tiles[flipped[1]].Color;
 
-        if (tile1.Color == tile2.Color)
+        if (tile1 == tile2)
         {
             Debug.Log("Match!");
             pairsMatched++;
@@ -84,14 +121,17 @@ public class GameController : MonoBehaviour
             if (pairsMatched == numberOfTiles * 0.5f)
             {
                 Debug.Log("Win!");
-                levelCompleted.Invoke(currentLevel);
+                LevelCompleted?.Invoke(currentLevel);
             }
         }
         else
         {
             Debug.Log("Didn't match!");
             yield return new WaitForSeconds(0.5f);
-            //tile1.Flip();
+            Flip(flipped[0], false);
+            Flip(flipped[1], false);
+
+
             //tile2.Flip();
             numberFlipped = 0;
         }
@@ -117,7 +157,7 @@ public class GameController : MonoBehaviour
             //    tile.tileClicked += OnTileClicked;
             //}
             //
-            PositionTiles();
+            //PositionTiles();
         }
         else
         {
@@ -125,36 +165,11 @@ public class GameController : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Tiles are positioned in a grid in a way that they all fit withing the camera's view
-    /// </summary>
-    void PositionTiles()
-    {
 
-        //Vector3 startPos = Camera.main.transform.position;
-        //
-        //
-        //startPos.y -= spacing * Math.Max(gridX, gridY);
-        //
-        //startPos.x -= spacing * gridX * 0.5f;
-        //startPos.x += spacing * 0.5f;
-        //
-        //startPos.z -= spacing * gridY * 0.5f;
-        //startPos.z += spacing * 0.5f;
-        //
-        //
-        //
-        //for (int i = 0; i < tiles.Length; i++)
-        //{
-        //    float rowf = Mathf.Floor(i / gridX);
-        //
-        //    int row = Convert.ToInt32(rowf);
-        //    int column = i % gridX;
-        //
-        //    Vector3 position = new Vector3(column * spacing, 0f, row * spacing);
-        //
-        //    tiles[i].transform.position = startPos + position;
-        //}
+    void Flip(int tileIndex, bool flipped)
+    {
+        tileData.Flip(tileIndex, flipped);
+        tileView.Flip(tileIndex, flipped);
     }
 
 
@@ -163,6 +178,7 @@ public class GameController : MonoBehaviour
     public void DestroyTiles()
     {
         tileData.tiles.Clear();
+        tileView.DestroyTiles();
         //foreach (var tile in tiles)
         //{
         //    tile.tileClicked -= OnTileClicked;
