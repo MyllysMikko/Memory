@@ -31,7 +31,8 @@ public class MenuController : MonoBehaviour
     {
         backGround.SetActive(false);
         winText.enabled = false;
-        //Set mainmenu as the starting menu
+        //Set mainmenu as the starting screen
+        //I'm using a stack to keep track of what menu we should be displaying.
         stateStack.Push(MenuState.MainMenu);
         SwitchMenu();
 
@@ -39,7 +40,7 @@ public class MenuController : MonoBehaviour
         saveManager = new SaveManager();
         levelsCompleted = saveManager.LoadData();
         Debug.Log(levelsCompleted);
-        gameController.levelCompleted += OnLevelComplete;
+        gameController.LevelCompleted += OnLevelComplete;
 
         UpdateLevelSelect();
     }
@@ -61,8 +62,8 @@ public class MenuController : MonoBehaviour
     }
 
     //Updates which levels can be selected.
-    //Since "levelsCompleted" starts counting at 1, and arrays start at 0. This convieniently let's us enable one more level than what has been complete.
-    //Example: if levelsCompleted is 1. Levels 0-1 are enabled.
+    //Since "levelsCompleted" starts counting at 1, and arrays start at 0. This convieniently let's us enable one more level than what has been completed.
+    //Example: if levelsCompleted is 1. Levels in indexes 0-1 are enabled (To the user, this shows as level 1 and 2 being unlocked).
     void UpdateLevelSelect()
     {
         for (int i = 0; i < buttons.Length; i++)
@@ -122,7 +123,7 @@ public class MenuController : MonoBehaviour
         if (stateStack.Peek() == MenuState.Level)
         {
             winText.enabled = false;
-            gameController.DestroyTiles();
+            gameController.ResetTiles();
         }
 
         stateStack.Pop();
@@ -137,9 +138,7 @@ public class MenuController : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// I'm using a stack to keep track of what menu we should be displaying.
-    /// </summary>
+
     void SwitchMenu()
     {
         MenuState state;

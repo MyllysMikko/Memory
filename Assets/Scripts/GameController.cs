@@ -1,17 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
-    [SerializeField] TileView[] tiles;
+    TileData tileData;
     [SerializeField] TileFactory tileFactory;
-
-    [Header("Tiles")]
-    [SerializeField] int gridX;
-    [SerializeField] int gridY;
-    [SerializeField] float spacing = 2;
+    [SerializeField] TileView tileView;
 
     int currentLevel;
     int pairsMatched;
@@ -20,11 +17,41 @@ public class GameController : MonoBehaviour
     int[] flipped;
     int numberFlipped;
 
-    public TileView.GameEvent levelCompleted;
+    public delegate void GameEvent(int index);
+
+    public event GameEvent LevelCompleted;
+
     void Start()
     {
+        tileData = gameObject.AddComponent<TileData>();
         numberFlipped = 0;
         flipped = new int[2];
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            MouseClick();
+        }
+    }
+
+    void MouseClick()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        if (Physics.Raycast(ray, out RaycastHit hit))
+        {
+            if (hit.collider.CompareTag("Tile"))
+            {
+                TilePrefab tilePrefab = hit.collider.GetComponent<TilePrefab>();
+
+                if (!tileData.tiles[tilePrefab.TileIndex].flipped)
+                {
+                    OnTileClicked(tilePrefab.TileIndex);
+                }
+            }
+        }
     }
 
 
@@ -33,16 +60,16 @@ public class GameController : MonoBehaviour
         // No additional flips are accepted until the last two are flipped back (If they didn't match)
         if (numberFlipped <= 1)
         {
-            tiles[tileIndex].Flip();
+            Flip(tileIndex, true);
             flipped[numberFlipped] = tileIndex;
             numberFlipped++;
-
+    
             if (numberFlipped > 1)
             {
                 StartCoroutine(CheckSelected());
             }
         }
-
+    
     }
 
     /// <summary>
@@ -56,9 +83,10 @@ public class GameController : MonoBehaviour
         numberFlipped = 0;
         pairsMatched = 0;
         this.currentLevel = currentLevel;
-        this.gridX = gridX;
-        this.gridY = gridY;
+        numberOfTiles = gridX * gridY;
         GetTiles();
+
+        tileView.SetTiles(tileData.tiles, numberOfTiles, gridX, gridY);
     }
 
     /// <summary>
@@ -69,10 +97,10 @@ public class GameController : MonoBehaviour
     /// <returns></returns>
     IEnumerator CheckSelected()
     {
-        TileView tile1 = tiles[flipped[0]];
-        TileView tile2 = tiles[flipped[1]];
+        Color tile1 = tileData.tiles[flipped[0]].Color;
+        Color tile2 = tileData.tiles[flipped[1]].Color;
 
-        if (tile1.tile.color == tile2.tile.color)
+        if (tile1 == tile2)
         {
             Debug.Log("Match!");
             pairsMatched++;
@@ -82,15 +110,16 @@ public class GameController : MonoBehaviour
             if (pairsMatched == numberOfTiles * 0.5f)
             {
                 Debug.Log("Win!");
-                levelCompleted.Invoke(currentLevel);
+                LevelCompleted?.Invoke(currentLevel);
             }
         }
         else
         {
             Debug.Log("Didn't match!");
             yield return new WaitForSeconds(0.5f);
-            tile1.Flip();
-            tile2.Flip();
+            Flip(flipped[0], false);
+            Flip(flipped[1], false);
+
             numberFlipped = 0;
         }
     }
@@ -98,23 +127,15 @@ public class GameController : MonoBehaviour
 
 
     /// <summary>
-    /// This function calls tileFactory to make an array of tiles.
-    /// Each tile will be identified by it's index within this array.
+    /// Calls TileFactory to create a list of tiles.
+    /// Function is provided with an already existing list so that any already existing tiles can be reused.
     /// </summary>
     void GetTiles()
     {
-        numberOfTiles = gridX * gridY;
 
         if (numberOfTiles % 2 == 0)
         {
-           tiles = tileFactory.GetTiles((int)(numberOfTiles * 0.5f));
-
-            foreach (var tile in tiles)
-            {
-                tile.tileClicked += OnTileClicked;
-            }
-
-            PositionTiles();
+           tileFactory.GetTiles(tileData.tiles,(int)(numberOfTiles * 0.5f)).ToList();
         }
         else
         {
@@ -122,47 +143,17 @@ public class GameController : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Tiles are positioned in a grid in a way that they all fit withing the camera's view
-    /// </summary>
-    void PositionTiles()
+
+    void Flip(int tileIndex, bool flipped)
     {
-
-        Vector3 startPos = Camera.main.transform.position;
-
-
-        startPos.y -= spacing * Math.Max(gridX, gridY);
-
-        startPos.x -= spacing * gridX * 0.5f;
-        startPos.x += spacing * 0.5f;
-
-        startPos.z -= spacing * gridY * 0.5f;
-        startPos.z += spacing * 0.5f;
-
-
-
-        for (int i = 0; i < tiles.Length; i++)
-        {
-            float rowf = Mathf.Floor(i / gridX);
-
-            int row = Convert.ToInt32(rowf);
-            int column = i % gridX;
-
-            Vector3 position = new Vector3(column * spacing, 0f, row * spacing);
-
-            tiles[i].transform.position = startPos + position;
-        }
+        tileData.Flip(tileIndex, flipped);
+        tileView.Flip(tileIndex, flipped);
     }
 
 
-    //To increase performance, we could (and probably should!) pool tiles and then reuse them
-    //instead of deleting them and creating new ones each time.
-    public void DestroyTiles()
+    public void ResetTiles()
     {
-        foreach (var tile in tiles)
-        {
-            tile.tileClicked -= OnTileClicked;
-            Destroy(tile.gameObject);
-        }
+        tileData.ResetTiles();
+        tileView.ResetTiles();
     }
 }

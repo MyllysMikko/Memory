@@ -1,53 +1,78 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class TileView : MonoBehaviour
 {
-    [SerializeField] Renderer backSideRenderer;
-    [SerializeField] Animator animator;
+    [SerializeField] GameObject tilePrefab;
+    List<TilePrefab> tiles = new List<TilePrefab>();
 
-    int tileIndex = 0;
-    public Tile tile;
+    [Header("Tiles")]
+    [SerializeField] float spacing = 2;
 
-    public delegate void GameEvent(int tileIndex);
 
-    public event GameEvent tileClicked;
-
-    /// <summary>
-    /// Event is called when this tile is clicked.
-    /// tileIndex is passed along this event, which GameController uses to identify this tile in the array and check it's information. (mainly to check it's color)
-    /// !tile.flipped ensures that events are not called for tiles that are already flipped.
-    /// (This check could be done in GameController since it can already access this tile using tileIndex, but I find it better to not send an event at tall if a tile can't be flipped)
-    /// 
-    /// </summary>
-    public void OnClick()
+    public void SetTiles(List<Tile> tileList, int numberOfTiles, int gridX, int gridY)
     {
-        if (!tile.flipped)
+        for (int i = 0; i < numberOfTiles; i++)
         {
-            tileClicked?.Invoke(tileIndex);
-            Debug.Log(tile.color.ToString());
+            if (tiles.Count >= i + 1)
+            {
+                tiles[i].SetTile(tileList[i].Color, i);
+                tiles[i].gameObject.SetActive(true);
+            }
+            else
+            {
+                GameObject spawnedTile = Instantiate(tilePrefab);
+                TilePrefab tilePref = spawnedTile.GetComponent<TilePrefab>();
+                tilePref.SetTile(tileList[i].Color, i);
+
+                tiles.Add(tilePref);
+            }
         }
-
+        PositionTiles(numberOfTiles, gridX, gridY);
     }
 
-    public void Flip()
+    public void Flip(int tileIndex, bool flipped)
     {
-        tile.flipped = !tile.flipped;
-        animator.SetBool("flipped", tile.flipped);
+        tiles[tileIndex].animator.SetBool("flipped", flipped);
     }
 
-
-    public void SetTile(Tile tile)
+    public void ResetTiles()
     {
-        this.tile = tile;
-        //TODO set model state to mirror tile state (bool flipped)
-        backSideRenderer.material.SetColor("_Color", this.tile.color);
+        foreach(TilePrefab tile in tiles)
+        {
+            tile.gameObject.SetActive(false);
+        }
     }
 
-    public void SetIndex(int index)
+    void PositionTiles(int numberOfTiles, int gridX, int gridY)
     {
-        tileIndex = index;
+
+        Vector3 startPos = Camera.main.transform.position;
+        startPos.y -= spacing * Math.Max(gridX, gridY);
+
+        startPos.x -= spacing * gridX * 0.5f;
+        startPos.x += spacing * 0.5f;
+
+        startPos.z -= spacing * gridY * 0.5f;
+        startPos.z += spacing * 0.5f;
+
+
+
+        for (int i = 0; i < numberOfTiles; i++)
+        {
+            float rowf = Mathf.Floor(i / gridX);
+
+            int row = Convert.ToInt32(rowf);
+            int column = i % gridX;
+
+            Vector3 position = new Vector3(column * spacing, 0f, row * spacing);
+
+            tiles[i].transform.position = startPos + position;
+        }
     }
 }
+
+
