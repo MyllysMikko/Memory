@@ -10,9 +10,6 @@ public class GameController : MonoBehaviour
     [SerializeField] TileFactory tileFactory;
     [SerializeField] TileView tileView;
 
-    int gridX;
-    int gridY;
-
     int currentLevel;
     int pairsMatched;
     int numberOfTiles;
@@ -41,10 +38,9 @@ public class GameController : MonoBehaviour
 
     void MouseClick()
     {
-        RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-        if (Physics.Raycast(ray, out hit))
+        if (Physics.Raycast(ray, out RaycastHit hit))
         {
             if (hit.collider.CompareTag("Tile"))
             {
@@ -54,11 +50,6 @@ public class GameController : MonoBehaviour
                 {
                     OnTileClicked(tilePrefab.TileIndex);
                 }
-
-
-
-                //tileView?.OnClick();
-
             }
         }
     }
@@ -69,7 +60,6 @@ public class GameController : MonoBehaviour
         // No additional flips are accepted until the last two are flipped back (If they didn't match)
         if (numberFlipped <= 1)
         {
-            //tiles[tileIndex].Flip();
             Flip(tileIndex, true);
             flipped[numberFlipped] = tileIndex;
             numberFlipped++;
@@ -93,8 +83,6 @@ public class GameController : MonoBehaviour
         numberFlipped = 0;
         pairsMatched = 0;
         this.currentLevel = currentLevel;
-        this.gridX = gridX;
-        this.gridY = gridY;
         numberOfTiles = gridX * gridY;
         GetTiles();
 
@@ -132,8 +120,6 @@ public class GameController : MonoBehaviour
             Flip(flipped[0], false);
             Flip(flipped[1], false);
 
-
-            //tile2.Flip();
             numberFlipped = 0;
         }
     }
@@ -141,24 +127,15 @@ public class GameController : MonoBehaviour
 
 
     /// <summary>
-    /// This function calls tileFactory to make an array of tiles.
-    /// Each tile will be identified by it's index within this array.
+    /// Calls TileFactory to create a list of tiles.
+    /// Function is provided with an already existing list so that any already existing tiles can be reused.
     /// </summary>
     void GetTiles()
     {
 
-
         if (numberOfTiles % 2 == 0)
         {
            tileFactory.GetTiles(tileData.tiles,(int)(numberOfTiles * 0.5f)).ToList();
-
-            //
-            //foreach (var tile in tiles)
-            //{
-            //    tile.tileClicked += OnTileClicked;
-            //}
-            //
-            //PositionTiles();
         }
         else
         {
@@ -174,18 +151,9 @@ public class GameController : MonoBehaviour
     }
 
 
-    //To increase performance, we could (and probably should!) pool tiles and then reuse them
-    //instead of deleting them and creating new ones each time.
-    public void DestroyTiles()
+    public void ResetTiles()
     {
-
-
         tileData.ResetTiles();
         tileView.ResetTiles();
-        //foreach (var tile in tiles)
-        //{
-        //    tile.tileClicked -= OnTileClicked;
-        //    Destroy(tile.gameObject);
-        //}
     }
 }

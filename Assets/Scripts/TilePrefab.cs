@@ -18,10 +18,8 @@ public class TilePrefab : MonoBehaviour
 
     public void SetTile(Color color, int tileIndex)
     {
-        //TODO set model state to mirror tile state (bool flipped)
         backSideRenderer.material.SetColor("_Color", color);
         TileIndex = tileIndex;
-        //backSideRenderer.sharedMaterial.SetColor("_Color", tile.Color);
     }
 
     public void SetIndex(int index)

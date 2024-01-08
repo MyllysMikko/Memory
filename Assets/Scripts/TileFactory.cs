@@ -31,21 +31,15 @@ public class TileFactory : MonoBehaviour
     };
 
     /// <summary>
-    /// This function creates multiple tilePrefabs and returns an array of their TileView classes
-    /// tilePrefabs contain TileView class which handles a tile's animations (While also holding the Tile class for easy access)
-    /// This could be done in one loop, but I feel like it's a bit easier to read when you first create tile data (Tile class) and then create the tiles themselves (TileView class)
-    /// 
-    /// The reason why we're returning an array of TileView classes instead of the instantiated prefabs is because this cuts down on GetComponent calls later on. 
+    /// Takes in a list, and depending on said list, will either add new tiles or modify existing tiles as needed.
     /// </summary>
     /// <param name="numberOfPairs">How many pairs of tiles are to be made</param>
     /// <returns></returns>
     public List<Tile> GetTiles(List<Tile> tileList ,int numberOfPairs)
     {
         int numberOfTiles = numberOfPairs * 2;
-        Tile[] tiles = new Tile[numberOfTiles];
 
         int tileIndex = 0;
-        int colorIndex = 0;
 
         for (int i = 0; i < numberOfPairs; i++)
         {
@@ -86,12 +80,18 @@ public class TileFactory : MonoBehaviour
         return tileList;
     }
 
-    void Shuffle(List<Tile> tileArray, int numberOfTiles)
+    /// <summary>
+    /// Shuffles part of a list.
+    /// Part of the list that is shuffled is from index 0 to numberOfTiles.
+    /// </summary>
+    /// <param name="tileList">List to be modified</param>
+    /// <param name="numberOfTiles">Number of tiles that will be shuffled.</param>
+    void Shuffle(List<Tile> tileList, int numberOfTiles)
     {
         for (int i = 0; i < numberOfTiles; i++)
         {
             int shuffle = Random.Range(0, numberOfTiles);
-            (tileArray[shuffle], tileArray[i]) = (tileArray[i], tileArray[shuffle]);
+            (tileList[shuffle], tileList[i]) = (tileList[i], tileList[shuffle]);
         }
     }
 
