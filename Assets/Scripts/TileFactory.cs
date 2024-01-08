@@ -39,36 +39,58 @@ public class TileFactory : MonoBehaviour
     /// </summary>
     /// <param name="numberOfPairs">How many pairs of tiles are to be made</param>
     /// <returns></returns>
-    public Tile[] GetTiles(int numberOfPairs)
+    public List<Tile> GetTiles(List<Tile> tileList ,int numberOfPairs)
     {
         int numberOfTiles = numberOfPairs * 2;
         Tile[] tiles = new Tile[numberOfTiles];
 
         int tileIndex = 0;
+        int colorIndex = 0;
 
         for (int i = 0; i < numberOfPairs; i++)
         {
+
+            //Could this be simplified?
+            if (tileList.Count >= tileIndex + 1)
+            {
+                tileList[tileIndex].SetColor(colorArray[i]);
+            }
+            else
+            {
+                tileList.Add(new Tile(colorArray[i]));
+            }
+
+            if (tileList.Count >= tileIndex + 2)
+            {
+                tileList[tileIndex + 1].SetColor(colorArray[i]);
+            }
+            else
+            {
+                tileList.Add(new Tile(colorArray[i]));
+            }
+
+
             //Here I am casting a number to TileColor enum.
             //0 = Black
             //1 = Red
             //This could be a problem if you were to ask for more pairs than there were available colors.
-            tiles[tileIndex] = new Tile(colorArray[i]);
-            tiles[tileIndex+1] = new Tile(colorArray[i]);
+            //tiles[tileIndex] = new Tile(colorArray[i]);
+            //tiles[tileIndex+1] = new Tile(colorArray[i]);
             tileIndex += 2;
         }
 
 
         //We randomize the order of tiles and finally go through the array one last time to set their propex indexes.
-        Shuffle(tiles);
+        Shuffle(tileList, numberOfTiles);
 
-        return tiles;
+        return tileList;
     }
 
-    void Shuffle(Tile[] tileArray)
+    void Shuffle(List<Tile> tileArray, int numberOfTiles)
     {
-        for (int i = 0; i < tileArray.Length; i++)
+        for (int i = 0; i < numberOfTiles; i++)
         {
-            int shuffle = Random.Range(0, i);
+            int shuffle = Random.Range(0, numberOfTiles);
             (tileArray[shuffle], tileArray[i]) = (tileArray[i], tileArray[shuffle]);
         }
     }

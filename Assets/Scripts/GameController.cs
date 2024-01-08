@@ -95,9 +95,10 @@ public class GameController : MonoBehaviour
         this.currentLevel = currentLevel;
         this.gridX = gridX;
         this.gridY = gridY;
+        numberOfTiles = gridX * gridY;
         GetTiles();
 
-        tileView.SetTiles(tileData.tiles, gridX, gridY);
+        tileView.SetTiles(tileData.tiles, numberOfTiles, gridX, gridY);
     }
 
     /// <summary>
@@ -145,11 +146,11 @@ public class GameController : MonoBehaviour
     /// </summary>
     void GetTiles()
     {
-        numberOfTiles = gridX * gridY;
+
 
         if (numberOfTiles % 2 == 0)
         {
-           tileData.tiles = tileFactory.GetTiles((int)(numberOfTiles * 0.5f)).ToList();
+           tileFactory.GetTiles(tileData.tiles,(int)(numberOfTiles * 0.5f)).ToList();
 
             //
             //foreach (var tile in tiles)
@@ -177,8 +178,10 @@ public class GameController : MonoBehaviour
     //instead of deleting them and creating new ones each time.
     public void DestroyTiles()
     {
-        tileData.tiles.Clear();
-        tileView.DestroyTiles();
+
+
+        tileData.ResetTiles();
+        tileView.ResetTiles();
         //foreach (var tile in tiles)
         //{
         //    tile.tileClicked -= OnTileClicked;

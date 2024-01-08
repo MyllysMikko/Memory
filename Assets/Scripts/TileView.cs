@@ -13,18 +13,25 @@ public class TileView : MonoBehaviour
     [SerializeField] float spacing = 2;
 
 
-    public void SetTiles(List<Tile> tileList, int gridX, int gridY)
+    public void SetTiles(List<Tile> tileList, int numberOfTiles, int gridX, int gridY)
     {
-        for (int i = 0; i < tileList.Count; i++)
+        for (int i = 0; i < numberOfTiles; i++)
         {
-            GameObject spawnedTile = Instantiate(tilePrefab);
-            TilePrefab tilePref = spawnedTile.GetComponent<TilePrefab>();
-            tilePref.SetTile(tileList[i].Color, i);
+            if (tiles.Count >= i + 1)
+            {
+                tiles[i].SetTile(tileList[i].Color, i);
+                tiles[i].gameObject.SetActive(true);
+            }
+            else
+            {
+                GameObject spawnedTile = Instantiate(tilePrefab);
+                TilePrefab tilePref = spawnedTile.GetComponent<TilePrefab>();
+                tilePref.SetTile(tileList[i].Color, i);
 
-            tiles.Add(tilePref);
-
+                tiles.Add(tilePref);
+            }
         }
-        PositionTiles(gridX, gridY);
+        PositionTiles(numberOfTiles, gridX, gridY);
     }
 
     public void Flip(int tileIndex, bool flipped)
@@ -32,16 +39,15 @@ public class TileView : MonoBehaviour
         tiles[tileIndex].animator.SetBool("flipped", flipped);
     }
 
-    public void DestroyTiles()
+    public void ResetTiles()
     {
         foreach(TilePrefab tile in tiles)
         {
-            Destroy(tile.gameObject);
+            tile.gameObject.SetActive(false);
         }
-        tiles.Clear();
     }
 
-    void PositionTiles(int gridX, int gridY)
+    void PositionTiles(int numberOfTiles, int gridX, int gridY)
     {
 
         Vector3 startPos = Camera.main.transform.position;
@@ -55,7 +61,7 @@ public class TileView : MonoBehaviour
 
 
 
-        for (int i = 0; i < tiles.Count; i++)
+        for (int i = 0; i < numberOfTiles; i++)
         {
             float rowf = Mathf.Floor(i / gridX);
 

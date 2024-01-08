@@ -12,6 +12,14 @@ public class TileData : MonoBehaviour
     {
         tiles[tileIndex].flipped = flipped;
     }
+
+    public void ResetTiles()
+    {
+        foreach (Tile tile in tiles)
+        {
+            tile.flipped = false;
+        }
+    }
 }
 
 [Serializable]
@@ -24,5 +32,10 @@ public class Tile
     {
         Color = color;
         flipped = false;
+    }
+
+    public void SetColor(Color color)
+    {
+        Color = color;
     }
 }
